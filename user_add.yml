@@ -1,0 +1,13 @@
+---
+  - name: Creating user on node servers from master sever.
+    hosts: all
+    become: true
+    tasks:
+    - name: Adding user akash.
+      user:
+       name: akash
+       uid: 8888
+       shell: /bin/bash
+       group: ubuntu
+       
+...

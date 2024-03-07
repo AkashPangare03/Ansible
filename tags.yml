@@ -1,0 +1,21 @@
+---
+  - name: Tags Exampl.
+    hosts: all
+    become: true
+    tasks:
+    - name: Update servers.
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 state=latest
+      tags: tag_01  
+    - name: Install nginx on remote servers.
+      apt:
+        name: nginx
+        state: present
+      tags: tag_02    
+
+    - name: Starting nginx service.
+      service:
+        name: nginx
+        state: started 
+        enabled: true
+      tags: tag_03    
+...

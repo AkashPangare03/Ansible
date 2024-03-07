@@ -1,0 +1,13 @@
+---
+  - name: Creating file on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Creating file.
+      file:
+       path: /home/ubuntu/pangare.txt
+       state: touch
+       owner: ubuntu
+       group: ubuntu
+       mode: 0666 
+...

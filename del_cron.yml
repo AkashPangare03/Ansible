@@ -1,0 +1,11 @@
+---
+  - name: Deleting cron job from node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Deleting cronjob.
+      cron:
+       name: "Cron job for deleting file."
+       user: "ubuntu"
+       state: absent
+...

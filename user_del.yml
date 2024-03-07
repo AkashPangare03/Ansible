@@ -1,0 +1,12 @@
+---
+  - name: Deleting user from node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Deleting user akash.
+      user:
+       name: akash
+       state: absent
+      
+       
+...

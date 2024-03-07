@@ -1,0 +1,15 @@
+---
+  - name: Running a script on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Copying a script from master to nodes.
+      copy:
+       src: /home/ubuntu/example.sh
+       dest: /home/ubuntu/
+       owner: ubuntu
+       group: ubuntu
+       mode: 0777
+    - name: Running a script.
+      shell: /home/ubuntu/example.sh
+...

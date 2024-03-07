@@ -1,0 +1,16 @@
+---
+  - name: Adding cron job from master sever to node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Adding cronjob.
+      cron:
+       name: "Cron job for deleting file."
+       minute: 27
+       hour: 14
+       day: "*"
+       month: "*"
+       weekday: "*"
+       user: "ubuntu"
+       job: "rm /home/ubuntu/example.txt"
+...
