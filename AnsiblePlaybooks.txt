@@ -1,0 +1,291 @@
+Ansible Modules
+
+To check the syntax of your playbook use
+ansible-playbook your_playbook.yml --syntax-check
+
+To dry run your playbook use
+ansible-playbook your_playbook.yml --check
+
+To run your playbook use
+ansible-playbook your_playbook.yml 
+
+Examples of how to use modules in playbbok-
+
+1.Installing nginx on node servers using yum, apt and state modules.
+2.Starting and enabling nginx on node servers using service, state and enable moudles.
+For Debian family use apt module.
+For Redhat family use yum module.
+PLAYBOOK-
+---
+  - name: Installing and starting nginx server on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Update servers.
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 state=latest
+    - name: Install nginx on node servers.
+      apt:
+        name: nginx
+        state: present
+
+    - name: Starting nginx service.
+      service:
+        name: nginx
+        state: started
+        enabled: true
+...
+
+3.Copying files from master server to node servers using copy, owner, group and mode modules.  
+PLAYBOOK-
+---
+  - name: Copying file from master sever to node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Copying Files.
+      copy:
+       src: /home/ubuntu/akash.txt
+       dest: /home/ubuntu/
+       owner: root
+       group: ubuntu
+       mode:
+             ugo=rw
+...
+
+4.Copying edited file and taking backup of old file from master to node servers using backup module.
+PLAYBOOK-
+---
+  - name: Copying edited file akash.txt from master sever to node servers and taking backup of old file.
+    hosts: all
+    become: true
+    tasks:
+    - name: Copying Files.
+      copy:
+       src: /home/ubuntu/akash.txt
+       dest: /home/ubuntu/
+       owner: root
+       group: ubuntu
+       mode:
+             ugo=rw
+       backup: true
+...
+
+5.Creating file on node servers using file module.
+PLAYBOOK-
+---
+  - name: Creating file on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Creating file.
+      file:
+       path: /home/ubuntu/pangare.txt
+       state: touch
+       owner: ubuntu
+       group: ubuntu
+       mode: 0666
+...
+
+6.Deleting file from node servers using file and state module.
+PLAYBOOK-
+---
+  - name: Deleting file from node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Deleting file.
+      file:
+       path: /home/ubuntu/pangare.txt
+       state: absent
+...
+
+7.Running a script on node servers from master server using shell module.
+PLAYBOOK-
+---
+  - name: Running a script on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Copying a script from master to nodes.
+      copy:
+       src: /home/ubuntu/example.sh
+       dest: /home/ubuntu/
+       owner: ubuntu
+       group: ubuntu
+       mode: 0777
+    - name: Running a script.
+      shell: /home/ubuntu/example.sh
+...
+
+8.Adding a cron job to node servers from master server using cron module.
+PLAYBOOK-
+---
+  - name: Adding cron job from master sever to node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Adding cronjob.
+      cron:
+       name: "Cron job for deleting file."
+       minute: 27
+       hour: 14
+       day: "*"
+       month: "*"
+       weekday: "*"
+       user: "ubuntu"
+       job: "rm /home/ubuntu/example.txt"
+...
+
+9.Deleting a cron job from node servers using state module.
+PLAYBOOK-
+---
+  - name: Deleting cron job from node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Deleting cronjob.
+      cron:
+       name: "Cron job for deleting file."
+       user: "ubuntu"
+       state: absent
+...
+
+10.Creating user on nodes servers from master server using user module.
+PLAYBOOK-
+---
+  - name: Creating user on node servers from master sever.
+    hosts: all
+    become: true
+    tasks:
+    - name: Adding user akash.
+      user:
+       name: akash
+       uid: 8888
+       shell: /bin/bash
+       group: ubuntu
+
+...
+
+11.Deleting user from node servers using state module.
+PLAYBOOK-
+---
+  - name: Deleting user from node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Deleting user akash.
+      user:
+       name: akash
+       state: absent
+       remove: yes
+
+...
+
+12.Setting passwoord of user on node servers from master server
+PLAYBOOK-
+---
+  - name: Setting passwoord of user on node servers from master server.
+    hosts: all
+    become: true
+    tasks:
+    - name: Setting passwors of akash user.
+      user:
+       name: akash
+       update_password: always
+       password: "{{'akash123'| password_hash('sha512')}}"
+
+...
+
+
+13.Finding and killing running process on node servers using shell and ignore_error modules.
+PLAYBOOK-
+---
+  - name: Finding and killing process.
+    hosts: all
+    become: true
+    tasks:
+    - name: Killing nginx process.
+      ignore_errors: yes
+      shell: pgrep nginx | xargs kill
+...
+
+14.Downloaading file from internet on node servers from master server using get_url module.
+PLAYBOOK-
+---
+  - name: Downloaading file from internet on node servers.
+    hosts: all
+    become: true
+    tasks:
+    - name: Downloading css template.
+      get_url:
+        url: https://www.free-css.com/assets/files/free-css-templates/download/page296/neogym.zip
+        dest: /home/ubuntu/
+        owner: ubuntu
+        group: ubuntu
+
+...
+
+15.Illustration of tag module
+PLAYBOOK-
+---
+  - name: Tags Exampl.
+    hosts: all
+    become: true
+    tasks:
+    - name: Update servers.
+      apt: update_cache=yes force_apt_get=yes cache_valid_time=3600 state=latest
+      tags: tag_01
+    - name: Install nginx on remote servers.
+      apt:
+        name: nginx
+        state: present
+      tags: tag_02
+
+    - name: Starting nginx service.
+      service:
+        name: nginx
+        state: started
+        enabled: true
+      tags: tag_03
+...
+
+To run task mentioned in tag_01 - 
+ansible-playbook tags.yml -t tag_01
+
+To skip task mentioned in tag_02 -
+ansible-playbook tags.yml --skip-tags tag_02
+
+16.Using variables to download pacakages on node servers with the help of apt and state module.
+PLAYBOOK-
+---
+  - name: Using variables to download pacakages on node servers.
+    hosts: all
+    become: true
+    vars:
+      package: tomcat9
+    tasks:
+      - name: Downloading tomcat9 on node servers.
+        apt:
+         name: "{{package}}"
+         state: latest
+
+...
+
+17.Adding multiple users on node servers using loop.
+PLAYBBOOK-
+---
+  - name: Adding multiple users on node servers using loop.
+    hosts: all
+    become: true
+    tasks:
+      - name: Adding users akash, rushi, chetan and pranav.
+        user:
+         name: "{{item}}"
+         state: present
+        with_items:
+                   - akash
+                   - rushi
+                   - chetan
+                   - pranav
+
+...
