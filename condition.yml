@@ -1,0 +1,13 @@
+---
+  - name: Installing Packages on node servers using condition statements.
+    hosts: all
+    become: true
+    tasks:
+      - name: Installing apache2 on debian servers.
+        command: apt install apache2 -y
+        when: ansible_os_family== "Debian"
+      - name: Installing httpd on Redhat Servers.
+        command: yum install httpd -y
+        when: ansible_os_family== "RedHat"
+       
+...
